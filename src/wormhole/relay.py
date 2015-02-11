@@ -52,6 +52,9 @@ class Channel(resource.Resource):
         if verb == "post":
             data = json.load(request.content)
             messages.append(data["message"])
+            if which == "data":
+                from binascii import unhexlify
+                print "DATA:", repr(unhexlify(data["message"]))
 
         request.setHeader("content-type", "application/json; charset=utf-8")
         return json.dumps({"messages": other_messages})+"\n"
