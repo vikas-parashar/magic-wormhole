@@ -1,5 +1,5 @@
 
-# this starts a relay server on port 8009 and a transit server on 8010
+# this starts a relay server on port 3000 and a transit server on 3001
 start:
 	ve/bin/twistd -y src/wormhole/servers/relay.py
 
