@@ -7,7 +7,7 @@ stop:
 	kill `cat twistd.pid`
 
 restart:
-	$(MAKE) stop
+	-$(MAKE) stop
 	sleep 1
 	$(MAKE) start
 
