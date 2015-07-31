@@ -3,3 +3,6 @@
 # run, I'll shut it down.
 RENDEZVOUS_RELAY = "http://wormhole-relay.petmail.org:3000/wormhole-relay/"
 TRANSIT_RELAY = "tcp:wormhole-transit-relay.petmail.org:3001"
+
+RENDEZVOUS_RELAY = "http://localhost:3000/wormhole-relay/"
+TRANSIT_RELAY = "tcp:localhost:3001"
