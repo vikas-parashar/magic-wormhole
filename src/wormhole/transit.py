@@ -2,8 +2,8 @@ from __future__ import print_function
 import re, time, threading, socket, SocketServer
 from binascii import hexlify, unhexlify
 from nacl.secret import SecretBox
-from ..util import ipaddrs
-from ..util.hkdf import HKDF
+from .util import ipaddrs
+from .util.hkdf import HKDF
 
 class TransitError(Exception):
     pass

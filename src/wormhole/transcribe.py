@@ -5,11 +5,11 @@ from spake2 import SPAKE2_Symmetric
 from nacl.secret import SecretBox
 from nacl.exceptions import CryptoError
 from nacl import utils
-from .eventsource import EventSourceFollower
-from .. import __version__
-from .. import codes
-from ..errors import ServerError
-from ..util.hkdf import HKDF
+from .util.eventsource import EventSourceFollower
+from . import __version__
+from . import codes
+from .errors import ServerError
+from .util.hkdf import HKDF
 
 SECOND = 1
 MINUTE = 60*SECOND

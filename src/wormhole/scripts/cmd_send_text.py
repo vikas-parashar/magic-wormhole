@@ -7,7 +7,7 @@ APPID = "lothar.com/wormhole/text-xfer"
 @handle_server_error
 def send_text(args):
     # we're sending
-    from ..blocking.transcribe import Wormhole, WrongPasswordError
+    from ..transcribe import Wormhole, WrongPasswordError
 
     w = Wormhole(APPID, args.relay_url)
     if args.zeromode:

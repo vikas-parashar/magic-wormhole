@@ -7,8 +7,8 @@ APPID = "lothar.com/wormhole/file-xfer"
 @handle_server_error
 def receive_file(args):
     # we're receiving
-    from ..blocking.transcribe import Wormhole, WrongPasswordError
-    from ..blocking.transit import TransitReceiver, TransitError
+    from ..transcribe import Wormhole, WrongPasswordError
+    from ..transit import TransitReceiver, TransitError
     from .progress import start_progress, update_progress, finish_progress
 
     transit_receiver = TransitReceiver(args.transit_helper)

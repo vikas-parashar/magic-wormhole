@@ -4,7 +4,7 @@ from twisted.application import service
 from twisted.protocols import basic
 from twisted.web.client import Agent, ResponseDone
 from twisted.web.http_headers import Headers
-from ..util.eventual import eventually
+from .eventual import eventually
 
 class EventSourceParser(basic.LineOnlyReceiver):
     delimiter = "\n"
