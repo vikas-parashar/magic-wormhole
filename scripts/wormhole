@@ -1,0 +1,5 @@
+# -*- python -*-
+
+import sys
+from wormhole.scripts.runner import entry
+sys.exit(entry())
