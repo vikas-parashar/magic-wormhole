@@ -82,7 +82,7 @@ class Wormhole:
         if post_json:
             data = json.dumps(post_json).encode("utf-8")
             p = DataProducer(data)
-        d = self.agent.request("POST", url, bodyProducer=p)
+        d = self.agent.request("POST", url.encode("utf-8"), bodyProducer=p)
         def _check_error(resp):
             if resp.code != 200:
                 raise web_error.Error(resp.code, resp.phrase)
@@ -272,6 +272,6 @@ class Wormhole:
 
     def _deallocate(self, res):
         # only try once, no retries
-        d = self.agent.request("POST", self._url("deallocate"))
+        d = self.agent.request("POST", self._url("deallocate").encode("utf-8"))
         d.addBoth(lambda _: res) # ignore POST failure, pass-through result
         return d

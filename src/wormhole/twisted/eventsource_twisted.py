@@ -93,7 +93,7 @@ class EventSource: # TODO: service.Service
     def start(self):
         assert not self.started, "single-use"
         self.started = True
-        d = self.agent.request("GET", self.url,
+        d = self.agent.request("GET", self.url.encode("utf-8"),
                                Headers({"accept": ["text/event-stream"]}))
         d.addCallback(self._connected)
         return d
