@@ -13,8 +13,10 @@ parser = argparse.ArgumentParser(
     Wormholes are secure against anyone who doesn't use the same code."""),
     )
 
+import pkg_resources
 parser.add_argument("--version", action="version",
-                    version="magic-wormhole "+ __version__)
+                    version="magic-wormhole %s (pkg_resources=%s)"
+                    % (__version__, pkg_resources.get_distribution("magic-wormhole").version))
 g = parser.add_argument_group("wormhole configuration options")
 g.add_argument("--relay-url", default=public_relay.RENDEZVOUS_RELAY,
                metavar="URL", help="rendezvous relay to use")
