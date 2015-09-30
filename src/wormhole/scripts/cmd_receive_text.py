@@ -1,8 +1,8 @@
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 import sys, json, binascii
 from ..errors import handle_server_error
 
-APPID = b"lothar.com/wormhole/text-xfer"
+APPID = "lothar.com/wormhole/text-xfer"
 
 @handle_server_error
 def receive_text(args):

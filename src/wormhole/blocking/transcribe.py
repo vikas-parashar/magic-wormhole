@@ -1,5 +1,5 @@
-from __future__ import print_function
-import os, sys, time, re, requests, json
+from __future__ import print_function, unicode_literals
+import os, sys, time, re, requests, json, unicodedata
 from binascii import hexlify, unhexlify
 from spake2 import SPAKE2_Symmetric
 from nacl.secret import SecretBox
@@ -29,8 +29,9 @@ class Wormhole:
     version_warning_displayed = False
 
     def __init__(self, appid, relay):
-        if not isinstance(appid, type(b"")): raise UsageError
+        if not isinstance(appid, type("")): raise UsageError
         self.appid = appid
+        if not isinstance(relay, type("")): raise UsageError
         self.relay = relay
         if not self.relay.endswith("/"): raise UsageError
         self.started = time.time()
@@ -42,6 +43,7 @@ class Wormhole:
         self.verifier = None
 
     def _url(self, verb, msgnum=None):
+        assert isinstance(verb, type(""))
         url = "%s%d/%s/%s" % (self.relay, self.channel_id, self.side, verb)
         if msgnum is not None:
             url += "/" + msgnum
@@ -163,8 +165,9 @@ class Wormhole:
         return unhexlify(msgs[0].encode("ascii"))
 
     def derive_key(self, purpose, length=SecretBox.KEY_SIZE):
-        if not isinstance(purpose, type(b"")): raise UsageError
-        return HKDF(self.key, length, CTXinfo=purpose)
+        if not isinstance(purpose, type("")): raise UsageError
+        purpose_bytes = unicodedata.normalize("NFC", purpose).encode("utf-8")
+        return HKDF(self.key, length, CTXinfo=purpose_bytes)
 
     def _encrypt_data(self, key, data):
         assert isinstance(key, type(b"")), type(key)
@@ -188,7 +191,7 @@ class Wormhole:
             old_msgs = self._post_message(self._url("post", "pake"), self.msg1)
             pake_msg = self._get_message(old_msgs, "poll", "pake")
             self.key = self.sp.finish(pake_msg)
-            self.verifier = self.derive_key(self.appid+b":Verifier")
+            self.verifier = self.derive_key(self.appid+":Verifier")
 
     def get_verifier(self):
         if self.code is None: raise UsageError
@@ -211,7 +214,7 @@ class Wormhole:
         # Without predefined roles, we can't derive predictably unique keys
         # for each side, so we use the same key for both. We use random
         # nonces to keep the messages distinct, and check for reflection.
-        data_key = self.derive_key(b"data-key")
+        data_key = self.derive_key("data-key")
 
         outbound_encrypted = self._encrypt_data(data_key, outbound_data)
         msgs = self._post_message(self._url("post", "data"), outbound_encrypted)

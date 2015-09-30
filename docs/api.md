@@ -217,16 +217,17 @@ re-send it if necessary.
 All cryptographically-sensitive parameters are passed as bytes ("str" in
 python2, "bytes" in python3):
 
-* application identifier
 * verifier string
 * data in/out
-* derived-key "purpose" string
 * transit records in/out
 
-Some human-readable parameters are passed as strings: "str" in python2, "str"
-(i.e. unicode) in python3:
+Some human-readable parameters are passed as unicode. Applications which are
+py2/py3 compatible should consider using `from __future__ import
+unicode_literals` to make life easier.
 
 * wormhole code
+* application identifier
+* derived-key "purpose" string
 * relay/transit URLs
 * transit connection hints (e.g. "host:port")
 

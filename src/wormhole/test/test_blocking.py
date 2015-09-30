@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import json
 from twisted.trial import unittest
 from twisted.internet.defer import gatherResults
@@ -10,7 +11,7 @@ class Blocking(ServerBase, unittest.TestCase):
     # with deferToThread()
 
     def test_basic(self):
-        appid = b"appid"
+        appid = "appid"
         w1 = BlockingWormhole(appid, self.relayurl)
         w2 = BlockingWormhole(appid, self.relayurl)
         d = deferToThread(w1.get_code)
@@ -27,7 +28,7 @@ class Blocking(ServerBase, unittest.TestCase):
         return d
 
     def test_fixed_code(self):
-        appid = b"appid"
+        appid = "appid"
         w1 = BlockingWormhole(appid, self.relayurl)
         w2 = BlockingWormhole(appid, self.relayurl)
         w1.set_code("123-purple-elephant")
@@ -42,7 +43,7 @@ class Blocking(ServerBase, unittest.TestCase):
         return d
 
     def test_verifier(self):
-        appid = b"appid"
+        appid = "appid"
         w1 = BlockingWormhole(appid, self.relayurl)
         w2 = BlockingWormhole(appid, self.relayurl)
         d = deferToThread(w1.get_code)
@@ -66,7 +67,7 @@ class Blocking(ServerBase, unittest.TestCase):
         return d
 
     def test_verifier_mismatch(self):
-        appid = b"appid"
+        appid = "appid"
         w1 = BlockingWormhole(appid, self.relayurl)
         w2 = BlockingWormhole(appid, self.relayurl)
         d = deferToThread(w1.get_code)
@@ -83,7 +84,7 @@ class Blocking(ServerBase, unittest.TestCase):
         return d
 
     def test_errors(self):
-        appid = b"appid"
+        appid = "appid"
         w1 = BlockingWormhole(appid, self.relayurl)
         self.assertRaises(UsageError, w1.get_verifier)
         self.assertRaises(UsageError, w1.get_data, b"data")
@@ -98,7 +99,7 @@ class Blocking(ServerBase, unittest.TestCase):
         return d
 
     def test_serialize(self):
-        appid = b"appid"
+        appid = "appid"
         w1 = BlockingWormhole(appid, self.relayurl)
         self.assertRaises(UsageError, w1.serialize) # too early
         w2 = BlockingWormhole(appid, self.relayurl)

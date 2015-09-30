@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from twisted.application import service
 from ..twisted.util import allocate_ports
 from ..servers.relay import RelayServer
