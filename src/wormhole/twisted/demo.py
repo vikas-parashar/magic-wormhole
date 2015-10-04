@@ -5,7 +5,7 @@ from twisted.internet import reactor
 from .transcribe import Wormhole
 from .. import public_relay
 
-APPID = "lothar.com/wormhole/text-xfer"
+APPID = b"lothar.com/wormhole/text-or-file-xfer"
 
 w = Wormhole(APPID, public_relay.RENDEZVOUS_RELAY)
 

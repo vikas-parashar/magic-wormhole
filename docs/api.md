@@ -163,12 +163,13 @@ unicode in python3, plain bytes in python2).
 ## Application Identifier
 
 Applications using this library must provide an "application identifier", a
-simple bytestring that distinguishes one application from another. To ensure
-uniqueness, use a domain name. To use multiple apps for a single domain, just
-use a string like `example.com/app1`. This string must be the same on both
-clients, otherwise they will not see each other. The invitation codes are
-scoped to the app-id. Note that the app-id must be a bytestring, not unicode,
-so on python3 use `b"appid"`.
+simple bytestring that distinguishes one application from another. This is
+used in a URL, so it must not contain any slashes (U+002F). To ensure
+uniqueness, use a domain name. To use multiple apps for a single domain,
+prepend a fake hostname, like `app1.example.com`. This string must be the
+same on both clients, otherwise they will not see each other. The invitation
+codes are scoped to the app-id. Note that the app-id must be a bytestring,
+not unicode, so on python3 use `b"appid"`.
 
 Distinct app-ids reduce the size of the connection-id numbers. If fewer than
 ten initiators are active for a given app-id, the connection-id will only

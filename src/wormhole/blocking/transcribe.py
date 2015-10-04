@@ -15,18 +15,18 @@ SECOND = 1
 MINUTE = 60*SECOND
 
 # relay URLs are:
-#  GET /list                           -> {channel-ids: [INT..]}
-#  POST /allocate {side: SIDE}         -> {channel-id: INT}
+#  GET /APPID/list                         -> {channel-ids: [INT..]}
+#  POST /APPID/allocate {side: SIDE}       -> {channel-id: INT}
 #   these return all messages (base64) for CID= :
-#  POST /CID {side:, phase:, body:}    -> {messages: [{phase:, body:}..]}
-#  GET  /CID (no-eventsource)          -> {messages: [{phase:, body:}..]}
-#  GET  /CID (eventsource)             -> {phase:, body:}..
-#  POST /CID/deallocate {side: SIDE}   -> {status: waiting | deleted}
+#  POST /APPID/CID {side:, phase:, body:}  -> {messages: [{phase:, body:}..]}
+#  GET  /APPID/CID (no-eventsource)        -> {messages: [{phase:, body:}..]}
+#  GET  /APPID/CID (eventsource)           -> {phase:, body:}..
+#  POST /APPID/CID/deallocate {side: SIDE} -> {status: waiting | deleted}
 # all JSON responses include a "welcome:{..}" key
 
 class Channel:
-    def __init__(self, relay, channel_id, side, handle_welcome):
-        self._channel_url = "%s%d" % (relay, channel_id)
+    def __init__(self, relay, app_id, channel_id, side, handle_welcome):
+        self._channel_url = "%s%s/%d" % (relay, app_id, channel_id)
         self._side = side
         self._handle_welcome = handle_welcome
         self._messages = set() # (phase,body) , body is bytes
@@ -99,20 +99,21 @@ class Channel:
         # ignore POST failure, don't call r.raise_for_status()
 
 class ChannelManager:
-    def __init__(self, relay, side, handle_welcome):
+    def __init__(self, relay, app_id, side, handle_welcome):
         self._relay = relay
+        self._app_id = app_id
         self._side = side
         self._handle_welcome = handle_welcome
 
     def list_channels(self):
-        r = requests.get(self._relay + "list")
+        r = requests.get(self._relay + "%s/list" % self._app_id)
         r.raise_for_status()
         channel_ids = r.json()["channel-ids"]
         return channel_ids
 
     def allocate(self):
         data = json.dumps({"side": self._side}).encode("utf-8")
-        r = requests.post(self._relay + "allocate", data=data)
+        r = requests.post(self._relay + "%s/allocate" % self._app_id, data=data)
         r.raise_for_status()
         data = r.json()
         if "welcome" in data:
@@ -121,20 +122,21 @@ class ChannelManager:
         return channel_id
 
     def connect(self, channel_id):
-        return Channel(self._relay, channel_id, self._side,
+        return Channel(self._relay, self._app_id, channel_id, self._side,
                        self._handle_welcome)
 
 class Wormhole:
     motd_displayed = False
     version_warning_displayed = False
 
-    def __init__(self, appid, relay):
-        if not isinstance(appid, type(b"")): raise UsageError
-        self.appid = appid
+    def __init__(self, app_id, relay):
+        if not isinstance(app_id, type(b"")): raise UsageError
+        if b"/" in app_id: raise UsageError
+        self._app_id = app_id
         self.relay = relay
         if not self.relay.endswith("/"): raise UsageError
         side = hexlify(os.urandom(5)).decode("ascii")
-        self._channel_manager = ChannelManager(relay, side,
+        self._channel_manager = ChannelManager(relay, app_id, side,
                                                self.handle_welcome)
         self.code = None
         self.key = None
@@ -198,7 +200,7 @@ class Wormhole:
     def _start(self):
         # allocate the rest now too, so it can be serialized
         self.sp = SPAKE2_Symmetric(self.code.encode("ascii"),
-                                   idSymmetric=self.appid)
+                                   idSymmetric=self._app_id)
         self.msg1 = self.sp.start()
 
     def derive_key(self, purpose, length=SecretBox.KEY_SIZE):
@@ -227,7 +229,7 @@ class Wormhole:
             self.channel.send(u"pake", self.msg1)
             pake_msg = self.channel.get(u"pake")
             self.key = self.sp.finish(pake_msg)
-            self.verifier = self.derive_key(self.appid+b":Verifier")
+            self.verifier = self.derive_key(self._app_id+b":Verifier")
 
     def get_verifier(self):
         if self.code is None: raise UsageError
