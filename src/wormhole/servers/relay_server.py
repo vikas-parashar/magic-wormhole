@@ -46,14 +46,14 @@ class EventsProtocol:
 
 # note: no versions of IE (including the current IE11) support EventSource
 
-# relay URLs are:
-#  GET /APPID/list                         -> {channel-ids: [INT..]}
-#  POST /APPID/allocate {side: SIDE}       -> {channel-id: INT}
-#   these return all messages (base64) for CID= :
-#  POST /APPID/CID {side:, phase:, body:}  -> {messages: [{phase:, body:}..]}
-#  GET  /APPID/CID (no-eventsource)        -> {messages: [{phase:, body:}..]}
-#  GET  /APPID/CID (eventsource)           -> {phase:, body:}..
-#  POST /APPID/CID/deallocate {side: SIDE} -> {status: waiting | deleted}
+# relay URLs are as follows:   (MESSAGES=[{phase:,body:}..])
+#  GET /list?appid=                                 -> {channelids: [INT..]}
+#  POST /allocate {appid:,side:}                    -> {channelid: INT}
+#   these return all messages (base64) for appid=/channelid= :
+#  POST /add {appid:,channelid:,side:,phase:,body:} -> {messages: MESSAGES}
+#  GET  /get?appid=&channelid= (no-eventsource)     -> {messages: MESSAGES}
+#  GET  /get?appid=&channelid= (eventsource)        -> {phase:, body:}..
+#  POST /deallocate {appid:,channelid:,side:} -> {status: waiting | deleted}
 # all JSON responses include a "welcome:{..}" key
 
 class Channel(resource.Resource):
